@@ -17,10 +17,10 @@ bootm 0x30008000
 Ctrl+c 中断程序
 
 
-# mount 192.168.208.27:/srv/nfs4 /mnt -o nolock,proto=tcp 
+mount 192.168.208.27:/srv/nfs4 /mnt -o nolock,proto=tcp 
 
 
-/ # cat /mnt/xxx
+cat /mnt/xxx
 
 
 ifconfig eth0 192.168.208.127
