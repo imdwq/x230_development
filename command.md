@@ -24,6 +24,27 @@ bootm 0x30008000
 ### 使用NFS访问主机文件(默认主机已开启nfs-sever)
 mount 192.168.208.27:/srv/nfs4 /mnt -o nolock,proto=tcp 
 
+### env
+x210 # printenv
+mtdpart=80000 400000 3000000
+bootdelay=3
+baudrate=115200
+ethaddr=00:40:5c:26:0a:5b
+servenr=192.168.207.14
+rootfstype== yaffs2
+init== /linuxrc
+root== /dev/mtdblock2
+bootcmd=movi read kernel 0xc0008000;bootm 0xc000800
+bootargs=console=ttySAC2,115200 root=/dev/ram rw initrd=0x40000000,8M
+ramdisk=root=/dev/ram rw initrd=0x40000000,8M
+filesize=391EEA
+fileaddr=40000000
+netmask=255.255.0.0
+ipaddr=192.168.208.127
+serverip=192.168.208.27
+gatewayip=192.168.208.254
+
+
 ## 内核编译
 ### make命令的使用
 （读linux3.0,8默认配置文件）make x210_initrd_defconfig    
@@ -59,8 +80,8 @@ Network device support
 Second extended fs support  
 Ext3 journalling file system support  
 The Extended 4 (ext4) filesystem  
-
 DOS/FAT/NT Filesystems  --->  
+Miscellaneous filesystems --->  YAFFS2 file system support, Journalling Flash File System v2 (JFFS2) support
 Network File Systems(有依赖)  --->  NFS client support  
 
 ## 创建文件系统
@@ -74,8 +95,6 @@ Cross Compiler prefix
 * Installation Options ("make install" behavior)  
 (./_install) BusyBox installation prefix  
 make -> make install  
-
-### 
 
 ### 使用NFS文件系统在bootloader下的传递参数
 setenv rootfs root=/dev/nfs rw nfsroot=192.168.208.27:/srv/nfs4/nfslinux  
