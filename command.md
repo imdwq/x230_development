@@ -22,7 +22,7 @@ tftp 0x40000000 ramdisk_img2.gz
 bootm 0x30008000  
 /srv/tftpboot/ 主机tftp文件夹  
 ### 使用NFS访问主机文件(默认主机已开启nfs-sever)
-mount 192.168.208.27:/srv/nfs4 /mnt -o nolock,proto=tcp 
+mount 192.168.208.27:/srv/nfs4 /mnt -o nolock,proto=tcp
 
 ### env
 x210 # printenv
@@ -55,7 +55,7 @@ make -j8 8线程编译
 ### menuconfig中重要的设置
 * Genernal setup  
 Cross-compiler tool prefix  
-Initial RAM filesystem and RAM disk (initramfs/initrd) support 
+Initial RAM filesystem and RAM disk (initramfs/initrd) support
 Initramfs source file(s)
 Support initial ramdisks compressed using gzip  
 
@@ -75,7 +75,7 @@ HID Devices
 USB support  
 Network device support  
   Ethernet  
-  
+
 * File systems
 Second extended fs support  
 Ext3 journalling file system support  
@@ -118,7 +118,7 @@ Ctrl+z 暂停(stop)程序
 Alt+1234 切换终端标签页  
 Ctrl+Shift+T 打开新终端标签页  
 Ctrl+Shift+W 关闭当前终端标签页  
-### linux命令 
+### linux命令
 ifconfig eth0 192.168.208.127  
 cp -r  拷贝整个文件夹  
 ln -s ld-2.13.so ld-linux-armhf.so.3  
