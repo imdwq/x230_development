@@ -56,7 +56,7 @@
 
 Minicom是linux下的串口通信工具，本实验利用minicom实现主机与嵌入式系统系统之间的通信以及主机对嵌入式系统的控制。运用minicom软件，对minicom进行基本设置后，即可利用基于RS--232串口标准的的UART接口在主机和目标机之间进行初级引导通信。
 
-实际上，串口通信的通信速率很低，按照minicom\footnote{速率为115200bps = 14.0625KB/s}的波特率设置，传输一个5MB左右大小的内核就需要花6分钟以上的时间，效率极低，故在主机与目标机的后续文件传输等通讯中，改用目标机支持的有线以太网通信是必须的。本实验中，主要用到了tftp文件传输传输协议和NFS共享文件服务系统协议。
+实际上，串口通信的通信速率很低，按照minicom\footnote{速率为115200bps = $115200/1024/8$KB/s = 14.0625KB/s}的波特率设置，传输一个5MB左右大小的内核就需要花6分钟以上的时间，效率极低，故在主机与目标机的后续文件传输等通讯中，改用目标机支持的有线以太网通信是必须的。本实验中，主要用到了tftp文件传输传输协议和NFS共享文件服务系统协议。
 
 tftp协议主要用于在目标机bootloader加载完成后的通信中。在bootloader阶段，目标机会默认采用tftp协议并作为客户机\footnote{主机的tftp-server已经配置好}。在此实验中，tftp协议主要用于向开发板内存写入内核和基于ramdisk文件映像的文件系统。
 
@@ -65,7 +65,7 @@ tftp协议主要用于在目标机bootloader加载完成后的通信中。在boo
 \subsection{内核系统原理}\label{subsec:kern-prin}
 Linux内核是后续嵌入式开发的基础，没有刷入开发板的linux内核则无法实现后续的在开发板上运行嵌入式软件的工作。
 
-配置Linux内核所需要的源代码已经提供，本实验中有两个版本可以选择：2.6.35版本和3.0.8版本，不同的内核版本具有不同的功能和底层实现。内核源代码主要包括的内容有：
+配置Linux内核所需要的源代码已经提供，本实验中有两个版本可以选择：2.6.35版本和3.0.8版本，新版内核具有一些新特性、驱动、问题修复。内核源代码主要包括的内容有：
 \begin{itemize}
     \item 体系结构相关的代码\footnote{本机用到arm/s5pv210}
     \item 内核函数实现代码、内核初始化代码
@@ -95,7 +95,7 @@ Linux内核是后续嵌入式开发的基础，没有刷入开发板的linux内�
 实际上，不同于Windows系统\footnote{Windows系统从改用NT内核开始采用NTFS文件系统，早期使用的是FAT(16)、FAT32}，Linux下的文件系统分为ext系列，NFS，FFS系列等，他们的区别在于组织文件的形式和底层的管理文件方式不同。实验中主要涉及以下几种类别的文件系统:
 \begin{enumerate}
     \item ext文件系统：是linux普通磁盘上最常见的文件系统，目前主要有ext2fs，ext3，ext4，与windows的典型不同在于支持快速符号链接，ext3版本开始支持用于恢复文件的日志\label{item:intro-ext}
-    \item 网络文件系统NFS：可以通过mount命令将远端的文件系统挂载在本机的\textbackslash mnt文件夹下，从而方便的使用网络上其它计算机的文件
+    \item 网络文件系统NFS：可以通过mount命令将远端的文件系统挂载在本机的/mnt文件夹下，从而方便的使用网络上其它计算机的文件
     \item FLASH文件系统：以JFFS2、YAFFS2文件系统为代表，是专门针对闪存设计的文件系统，特点是采用“追加式”文件系统，对FLASH的使用寿命损耗较小。\label{item:intro-flash}
 \end{enumerate}
 
@@ -125,10 +125,10 @@ int main(int argc, char* argv[])
 }
 \end{lstlisting}
 
-在同一目录下编译程序1234.out，作为后续尝试在开发板Linux系统上运行的程序，并将其拷贝至主机NFS共享目录\footnote{/srv/nfs4}下待用：
+在同一目录下编译程序1234，作为后续尝试在开发板Linux系统上运行的程序，并将其拷贝至主机NFS共享目录\footnote{/srv/nfs4}下待用：
 \begin{Verbatim}[frame=single]
-$ arm-linux-gcc -o 1234.out 1234.c
-$ cp 1234.out /srv/nfs4/1234.out
+$ arm-linux-gcc -o 1234 1234.c
+$ cp 1234 /srv/nfs4/1234
 \end{Verbatim}
 
 为保证主机和从机能够通信且不与实验室其它电脑冲突，设定本机IP地址：
@@ -167,9 +167,9 @@ minicom显示大段系统启动过程消息后，出现root用户文件系统中
 # cd /mnt
 # ls
 \end{Verbatim}
-显示\verb"1234.out"，说明网络配置正确且NFS服务正常运行。
+显示\verb"1234"，说明网络配置正确且NFS服务正常运行。
 
-再输入\verb".\1234.out"，显示如下：
+再输入\verb"./1234"，显示如下：
 \begin{Verbatim}[frame=single]
 Hello world!!
 \end{Verbatim}
