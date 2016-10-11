@@ -1,29 +1,29 @@
+#include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include<stdio.h>
-#include<linux/fb.h>
-#include<sys/mman.h>
-#include<sys/ioctl.h>
-#include"frambuffer.h"
+#include <linux/fb.h>
+#include <sys/mman.h>
+#include <sys/ioctl.h>
+#include "frambuffer.h"
 
 color red, green, blue, alpha;
 
 unsigned int	xres;
 unsigned int	yres;
-unsigned int	bits_per_pixel; 
+unsigned int	bits_per_pixel;
 unsigned int	screensize;
 
 int main(int argc, char *argv[])
 {
 	vinfo fbinfo;
 	int fd = open ("/dev/fb", O_RDWR);
-	
+
 	ioctl(fd, FBIOGET_VSCREENINFO, &fbinfo);
 	init(&fbinfo);
 	unsigned char *fbp = 0;
-	fbp = (unsigned char *)mmap(0, screensize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-	
+	fbp = (unsigned char *)mmap(NULL, screensize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+
 	draw_block(fbp, 100, 200, 100, 200, 255, 0, 0);
 	draw_block(fbp, 100, 200, 200, 300, 0, 255, 0);
 	draw_block(fbp, 100, 200, 300, 400, 0, 0, 255);
@@ -52,7 +52,7 @@ void draw_point(unsigned char *buff, int x, int y,unsigned int red_p, unsigned i
 	*(unsigned char *)(buff + offset + red.offset / 8) = red_p;
 	*(unsigned char *)(buff + offset + green.offset /8) = green_p;
 	*(unsigned char *)(buff + offset + blue.offset /8) = blue_p;
-	
+
 }
 
 void draw_block(unsigned char *buff, int xmin,int xmax, int ymin, int ymax, unsigned int red_i, unsigned int green_i, unsigned int blue_i)
@@ -75,6 +75,6 @@ void draw_block(unsigned char *buff, int xmin,int xmax, int ymin, int ymax, unsi
 	{
 		for (int i = xmin; i < xmax; i++)
 			draw_point(buff, i, j, red_i, green_i, blue_i);
-	
+
 	}
 }

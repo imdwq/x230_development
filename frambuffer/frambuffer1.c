@@ -11,14 +11,14 @@ color red, green, blue, alpha;
 
 unsigned int	xres;
 unsigned int	yres;
-unsigned int	bits_per_pixel; 
+unsigned int	bits_per_pixel;
 unsigned int	screensize;
 
 int main(int argc, char *argv[])
 {
 	vinfo fbinfo;
 	int fd = open ("/dev/fb", O_RDWR);
-	
+
 	ioctl(fd, FBIOGET_VSCREENINFO, &fbinfo);
 	init(&fbinfo);
 	unsigned char *fbp = 0;
@@ -56,7 +56,7 @@ void draw_point(unsigned char *buff, int x, int y,unsigned int red_p, unsigned i
 	*(unsigned char *)(buff + offset + red.offset) = red_p;
 	*(unsigned char *)(buff + offset + green.offset) = green_p;
 	*(unsigned char *)(buff + offset + blue.offset) = blue_p;
-	
+
 }
 
 void draw_block(unsigned char *buff, int xmin,int xmax, int ymin, int ymax, unsigned int red_i, unsigned int green_i, unsigned int blue_i)
@@ -79,6 +79,6 @@ void draw_block(unsigned char *buff, int xmin,int xmax, int ymin, int ymax, unsi
 	{
 		for (int i = xmin; i < xmax; i++)
 			draw_point(buff, i, j, red_i, green_i, blue_i);
-	
+
 	}
 }
