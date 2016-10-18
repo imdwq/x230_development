@@ -1,10 +1,25 @@
 CC = arm-linux-gcc
+CFLAGS = -o
 
-fb : frambuffer.o
-	$(CC) -o $@ $<
+all : fbrun fbclean
 
-#fb.o : frambuffer.c
-#	$(CC) -c $@ $<
+fbrun : fbrun.o libfb.so
+	$(CC) -o $@ $< -L ./ -l fb
+
+fbclean : fbclean.o libfb.so
+	$(CC) -o $@ $< -L ./ -l fb
+
+libfb.so : frambuffer.o
+	$(CC) -shared -o $@ $< 
 
 %.o : %.c
 	$(CC) -c  $<
+
+
+
+.PHONY : clean
+
+clean :
+	rm -f *.o
+cleantmp :
+	rm -f *.h~ *.c~ Makefile~
