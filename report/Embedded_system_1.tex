@@ -330,7 +330,7 @@ $ ln -s ld-2.13.so ld-linux-armhf.so.3
 $ dd if=/dev/zero of=ramdisk_img bs=1k count=8192
 $ mke2fs ramdisk_img
 $ mount ramdisk_img
-$ cp -r /_install/* /mnt/ramdisk
+$ cp -r _install/* /mnt/ramdisk
 $ umount /mnt/ramdisk
 $ gzip ramdisk_img
 \end{Verbatim}
@@ -338,7 +338,7 @@ $ gzip ramdisk_img
 
 将NFS作为根文件系统，则实际上的根文件系统位于Ubuntu主机上的NFS文件夹中，故需要在minicom中更改bootloader对内核的传递参数才能正常启动：
 \begin{Verbatim}[frame=single]
-$ cp -r /_install/* /srv/nfs4/nfslinux
+$ cp -r _install/* /srv/nfs4/nfslinux
 $ minicom
 x210 # setenv rootfs root=/dev/nfs rw nfsroot=192.168.208.27:/srv/nfs4/
 nfslinux
@@ -352,7 +352,7 @@ x210 # saveenv
 还可以选择制作包含于内核中的ramdisk，理论上只需要将先前制作的文件系统打包即可，但实际操作中包含于内核的ramdisk\emph{根目录下没有init}无法启动，故应进行以下操作：
 \begin{Verbatim}[frame=single]
 $ cd _install
-$ ln -s /sbin/init init
+$ ln -s sbin/init init
 $ find ./ -print |cpio -H newc -o |gzip -9 > ~/ramdisk.cpio.gz
 \end{Verbatim}
 
