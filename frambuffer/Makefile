@@ -1,5 +1,6 @@
 CC = arm-linux-gcc
 CFLAGS = -o
+LIBS = libfb.so
 
 all : fbrun fbclean
 
@@ -17,9 +18,18 @@ libfb.so : frambuffer.o
 
 
 
-.PHONY : clean
+.PHONY : clean cleantmp lib cp
 
 clean :
 	rm -f *.o
+
 cleantmp :
 	rm -f *.h~ *.c~ Makefile~
+
+lib :
+	$(CC) -c franbuffer.o
+	$(CC) -shared -o $(LIBS) frambuffer.o
+
+cp :
+	cp fbrun fbclean /srv/nfs4/fb
+	cp libfb.so /srv/nfs4/nfslinux/lib
