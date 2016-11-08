@@ -1,8 +1,12 @@
 CC = arm-linux-gcc
 CFLAGS = -o
 LIBS = libfb.so
+PROGRAM = fbrun fbclean fbbmp fbflash
 
-all : fbrun fbclean fbbmp
+all : $(PROGRAM) 
+
+fbflash : fbflash.o libfb.so
+	$(CC) -o $@ $< -L ./ -l fb
 
 fbbmp : fbbmp.o libfb.so
 	$(CC) -o $@ $< -L ./ -l fb
@@ -34,5 +38,5 @@ lib :
 	$(CC) -shared -o $(LIBS) frambuffer.o
 
 cp :
-	cp fbrun fbclean fbbmp /srv/nfs4/fb
-	cp libfb.so /srv/nfs4/nfslinux/lib
+	cp $(PROGRAM) /srv/nfs4/fb
+	cp $(LIBS) /srv/nfs4/nfslinux/lib

@@ -3,7 +3,8 @@
 int main(int argc, char *argv[])
 {
 	unsigned char *fbp = 0;
-	fbp = fb_init();
+	int fd;
+	fd = fb_init(&fbp);
 
 	wipe_screen(fbp);
 	release_fb(fbp);
