@@ -1,9 +1,13 @@
 CC = arm-linux-gcc
 CFLAGS = -o
 LIBS = libfb.so
-PROGRAM = fbrun fbclean fbbmp fbflash
+PROGRAM = fbrun fbclean fbbmp fbflash fbblock
 
 all : $(PROGRAM) 
+
+
+fbblock : fbblock.o libfb.so
+	$(CC) -o $@ $< -L ./ -l fb
 
 fbflash : fbflash.o libfb.so
 	$(CC) -o $@ $< -L ./ -l fb

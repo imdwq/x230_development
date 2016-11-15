@@ -2,11 +2,9 @@
 
 int main(int argc, char *argv[])
 {
-	unsigned char *fbp = 0;
-	int fd;
-	fd = fb_init(&fbp);
+	unsigned char *fbp = fb_init();
 
-	wipe_screen(fbp);
+	wipe_allscreen(fbp);
 	release_fb(fbp);
 
 	return 0;

@@ -3,7 +3,7 @@
 #include <fcntl.h>
 #include <stdint.h>
 #include <stdlib.h>
-//#include <unistd.h>
+#include <unistd.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -19,24 +19,28 @@ static fbcolor red, green, blue, alpha;
 
 static uint32_t xres;
 static uint32_t yres;
+static uint32_t xvres;
+static uint32_t yvres;
 static uint32_t bits_per_pixel;
 static uint32_t screensize;
+static uint32_t screen0size;
 static uint32_t screenpixel;
+static int fd;
 
-
-enum DrawFuction{line, sin, cos};
-enum ScreenNum{V_SCREEN0, V_SCREEN1};
 
 static enum ScreenNum SCREEN_USING;
 
-int fb_init(unsigned char **buff)
+unsigned char *fb_init()
 {
 	vinfo fbinfo;
-	int fd = open ("/dev/fb0", O_RDWR);
+	fd = open ("/dev/fb0", O_RDWR);
 	ioctl(fd, FBIOGET_VSCREENINFO, &fbinfo);
 
 	xres = fbinfo.xres;
 	yres = fbinfo.yres;
+	xvres = fbinfo.xres_virtual;
+	yvres = yres * (V_SCREEN1 - V_SCREEN0 + 1);
+
 	bits_per_pixel = fbinfo.bits_per_pixel;
 	screenpixel = xres * yres;
 
@@ -49,20 +53,32 @@ int fb_init(unsigned char **buff)
 	alpha.offset = fbinfo.transp.offset;
 	alpha.length = fbinfo.transp.length;
 	
-	screensize = screenpixel * (red.length + blue.length + green.length + alpha.length) / BIT_TO_BYTE;
+	fbinfo.yres_virtual = yvres; 
+	screen0size = screenpixel * (red.length + blue.length + green.length + alpha.length) / BIT_TO_BYTE;
+	screensize = screen0size * yvres / yres;
 	fbinfo.yoffset = 0;
 	ioctl(fd, FBIOPAN_DISPLAY, &fbinfo);
 	SCREEN_USING = V_SCREEN0;
 	printf("vxres=%u, vyres= %u, yoffset=%u\n", fbinfo.xres_virtual, fbinfo.yres_virtual, fbinfo.yoffset);	
 
-	(*buff) = (unsigned char *)mmap(NULL, screensize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-
-	return fd;
+	return ((unsigned char *)mmap(NULL, screensize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0));
 }
 
 void wipe_screen(unsigned char* buff)
 {
-	memset(buff, 0, screensize);	
+	unsigned char *tmp = buff + screen0size * (SCREEN_USING - V_SCREEN0);
+	memset(tmp, 0, screen0size);
+}
+
+void wipe_oldscreen(unsigned char* buff)
+{
+	unsigned char *tmp = buff + screen0size * (V_SCREEN1 - SCREEN_USING);
+	memset(tmp, 0, screen0size);	
+}
+
+void wipe_allscreen(unsigned char* buff)
+{
+	memset(buff, 0, screensize);
 }
 
 void release_fb(unsigned char* buff)
@@ -70,7 +86,7 @@ void release_fb(unsigned char* buff)
 	munmap(buff, screensize); 
 }
 
-void switch_vscreen(int fd)
+void switch_vscreen()
 {
 	vinfo fbinfo;
 	ioctl(fd, FBIOGET_VSCREENINFO, &fbinfo);
@@ -84,7 +100,7 @@ void switch_vscreen(int fd)
 //	ioctl(fd, FBIOPUT_VSCREENINFO, &fbinfo);
 	ioctl(fd, FBIOPAN_DISPLAY, &fbinfo);
 	SCREEN_USING = !SCREEN_USING;
-	printf("yoffset=%u, screen%d\n", fbinfo.yoffset, SCREEN_USING);
+//	printf("yoffset=%u, screen%d\n", fbinfo.yoffset, SCREEN_USING);
 }
 
 void make_color(color_8 *out, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha)
@@ -176,6 +192,28 @@ void draw_block(unsigned char *buff, int xmin, int xmax, int ymin, int ymax, col
 	}
 }
 
+
+void draw_vblock(unsigned char* buff, int xmin, int xmax, int ymin, int ymax, color_8 color,  enum ScreenNum screen)
+{
+	ymin += screen * yres;
+	ymax += screen * yres;
+	draw_block(buff, xmin, xmax, ymin, ymax, color);
+}
+
+void draw_flash_block(unsigned char *buff, int xmin, int xmax, int ymin, int ymax, color_8 color, int steps, int delay)
+{
+	int i;
+	draw_vblock(buff, xmin, xmax, ymin, ymax, color, SCREEN_USING);
+	for(i = 1; i < steps; i++)
+	{
+		wipe_oldscreen(buff);
+		draw_vblock(buff, xmin + i, xmax + i, ymin, ymax, color, V_SCREEN1 - SCREEN_USING);
+		switch_vscreen();
+		usleep(delay);	
+	}
+
+}	
+
 void zero_func_trans(int *x, int *y, int x0, int y0)
 {
 	*y = *y - y0;
@@ -203,6 +241,12 @@ DrawFunc func_parabola_0(int x)
 	return x*x;
 }
 
+void draw_vBMP(unsigned char* buff, char path[], uint32_t xbias, uint32_t ybias, enum ScreenNum screen)
+{
+	printf("%s\n", path);
+	uint32_t ybias0 = ybias + screen * yres;
+	draw_BMP(buff, path, xbias, ybias0);
+}
 
 void draw_BMP(unsigned char* buff, char path[], uint32_t xbias, uint32_t ybias)
 {
@@ -258,7 +302,7 @@ void draw_BMP_24(unsigned char *buff, FILE *fp, BMP_info *info, uint32_t xbias, 
 	if (info->Height > 0)
 	{
 		//TODO:FIX y = 0 wrong!!!!!
-		for (y = info->Height - 1 + ybias; y >= ybias; y--)
+		for (y = info->Height + ybias; y > ybias; y--)
 		{
 			for(x = xbias; x < info->Width + xbias; x++)	
 			{
@@ -268,7 +312,7 @@ void draw_BMP_24(unsigned char *buff, FILE *fp, BMP_info *info, uint32_t xbias, 
 //				fread(&(color.red), 1, 1, fp);
 
 				color.alpha = 0;
-				draw_point(buff, x, y, color);
+				draw_point(buff, x, y - 1, color);
 			}
 			fseek(fp, width_offset, SEEK_CUR);
 		}
@@ -303,12 +347,12 @@ void draw_BMP_32(unsigned char *buff, FILE *fp, BMP_info *info, uint32_t xbias, 
 	printf("Height = %d, Width = %d\n", info->Height, info->Width);	
 	if (info->Height > 0)
 	{
-		for (y = info->Height - 1 + ybias; y >= ybias; y--)
+		for (y = info->Height + ybias; y > ybias; y--)
 		{
 			for(x = xbias; x < info->Width + xbias; x++)	
 			{
 				fread(&color, 4, 1, fp);
-				draw_point(buff, x, y, color);
+				draw_point(buff, x, y - 1, color);
 			}
 		}
 	}
@@ -328,7 +372,17 @@ void draw_BMP_32(unsigned char *buff, FILE *fp, BMP_info *info, uint32_t xbias, 
 	}
 }
 
-void draw_flash_BMP()
+void draw_flash_BMP(unsigned char *buff, char *path[], uint32_t xbias[], uint32_t ybias[], uint32_t frames, unsigned int sec)
 {
-	return;
+	printf("%s\n%s\n" , path[0], path[1]);
+	uint32_t i;
+	draw_vBMP(buff, path[0], xbias[0], ybias[0], SCREEN_USING);
+
+	for(i = 1; i < frames; i++)
+	{
+		wipe_oldscreen(buff);
+		draw_vBMP(buff, path[i], xbias[i], ybias[i], V_SCREEN1 - SCREEN_USING);
+		sleep(sec);
+		switch_vscreen();
+	}
 }

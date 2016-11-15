@@ -2,11 +2,9 @@
 
 int main(int argc, char *argv[])
 {
-	unsigned char *fbp = 0;
-	int fd;
-	fd = fb_init(&fbp);
+	unsigned char *fbp = fb_init();
 
-	wipe_screen(fbp);
+	wipe_allscreen(fbp);
 
 //	draw_block(fbp, 100, 200, 100, 200, 255, 0, 0);
 //	draw_block(fbp, 100, 200, 200, 300, 0, 255, 0);

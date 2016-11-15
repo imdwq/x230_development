@@ -6,6 +6,9 @@
 #include <stdint.h>
 #include <linux/fb.h>
 
+enum DrawFunction{line, cos, sin};
+enum ScreenNum{V_SCREEN0, V_SCREEN1};
+
 typedef struct fb_var_screeninfo vinfo;
 typedef struct fb_bitfield fbcolor;
 typedef struct
@@ -49,11 +52,15 @@ void draw_func(unsigned char *buff, IntFunc func, int xmin, int xmax, color_8 co
 void draw_func_0(unsigned char *buff, IntFunc func, int xmin, int xmax, color_8 color);
 void draw_line(unsigned char *buff, int xmin, int xmax, int ymin, int ymax, color_8 color);
 void draw_block(unsigned char *buff, int xmin,int xmax, int ymin, int ymax, color_8 color);
+void draw_vblock(unsigned char *buff, int xmin,int xmax, int ymin, int ymax, color_8 color, enum ScreenNum screen);
+void draw_flash_block(unsigned char *buff, int xmin,int xmax, int ymin, int ymax, color_8 color, int steps, int delay);
 
-int fb_init(unsigned char **buff);
+unsigned char *fb_init();
 void release_fb(unsigned char *buff);
 void wipe_screen(unsigned char *buff);
-void switch_vscreen(int fd);
+void wipe_oldscreen(unsigned char *buff);
+void wipe_allscreen(unsigned char *buff);
+void switch_vscreen();
 
 int y_axis_trans(int y);
 void zero_func_trans(int *x, int *y, int x0, int y0);
@@ -62,7 +69,9 @@ DrawFunc func_line(int x);
 DrawFunc func_parabola(int x);
 
 void draw_BMP(unsigned char *buff, char path[], uint32_t xbias, uint32_t ybias); 
+void draw_vBMP(unsigned char *buff, char path[], uint32_t xbias, uint32_t ybias, enum ScreenNum screen); 
 void draw_BMP_24(unsigned char *buff, FILE *fp, BMP_info *info, uint32_t xbias, uint32_t ybias);
 void draw_BMP_32(unsigned char *buff, FILE *fp, BMP_info *info, uint32_t xbias, uint32_t ybias);
+void draw_flash_BMP(unsigned char *buff, char *path[], uint32_t xbias[], uint32_t ybias[], uint32_t frames, unsigned int sec); 
 
 #endif
