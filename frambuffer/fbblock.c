@@ -1,7 +1,7 @@
 #include "frambuffer.h"
 #include <unistd.h>
 
-#define DELAY 8000 
+#define DELAY 8000
 
 int main(int argc, char *argv[])
 {
@@ -23,11 +23,11 @@ int main(int argc, char *argv[])
 	for(temp = 100; temp < 600; temp++)
 	{
 		draw_block(fbp, temp, temp + 100, 100, 200, color);
-		usleep(DELAY);	
+		usleep(DELAY);
 		wipe_allscreen(fbp);
 	}
 
-	
+
 
 	return 0;
 
