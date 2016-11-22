@@ -27,5 +27,7 @@ int main(int argc, char *argv[])
 		wipe_allscreen(fbp);
 	}
 
+	release_fb(fbp);
+
 	return 0;
 }
