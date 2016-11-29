@@ -1,23 +1,24 @@
+MODULE = xled.o
+KMODULE = xled.ko
+
+ifneq($(KERNELRELEASE),)
+	obj-m := $(MODULE) 
+else
+	KDIR := /home/student/dwq/linux-3.0.8
+	PWD := $(shell pwd)
+
+default:
+	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
+
+endif
+
 CC = arm-linux-gcc
 CFLAGS = -o
-LIBS = libfb.so
 PROGRAM = fbrun fbclean fbbmp fbflash fbblock fb2block
 
-all : $(PROGRAM) 
+program : $(PROGRAM) 
 
 fb2block : fb2block.o libfb.so
-	$(CC) -o $@ $< -L ./ -l fb
-
-fbblock : fbblock.o libfb.so
-	$(CC) -o $@ $< -L ./ -l fb
-
-fbflash : fbflash.o libfb.so
-	$(CC) -o $@ $< -L ./ -l fb
-
-fbbmp : fbbmp.o libfb.so
-	$(CC) -o $@ $< -L ./ -l fb
-
-fbrun : fbrun.o libfb.so
 	$(CC) -o $@ $< -L ./ -l fb
 
 fbclean : fbclean.o libfb.so
@@ -44,5 +45,5 @@ lib :
 	$(CC) -shared -o $(LIBS) frambuffer.o
 
 cp :
-	cp $(PROGRAM) /srv/nfs4/fb
-	cp $(LIBS) /srv/nfs4/nfslinux/lib
+	cp $(PROGRAM) /srv/nfs4/driver
+	cp $(KMODULE) /srv/nfs4/driver
