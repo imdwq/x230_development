@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <linux/fb.h>
 
-#ifdef FB_DEBUG
+#if FB_DEBUG
 #define PDEBUG(fmt, args...) printf(fmt, ##args)
 #else
 #define PDEBUG(fmt, args...)
@@ -55,7 +55,9 @@ void make_color(color_8 *out, unsigned char red, unsigned char green, unsigned c
 
 unsigned char *fb_init();
 unsigned char *fb1_init();
+unsigned char *fb2_init();
 void release_fb(unsigned char *buff);
+//DECEPATED:release_fb1();
 void release_fb1(unsigned char *buff);
 void wipe_screen(unsigned char *buff);
 void wipe_screen0(unsigned char *buff);
@@ -69,6 +71,7 @@ void draw_func_0(unsigned char *buff, IntFunc func, int xmin, int xmax, color_8 
 void draw_line(unsigned char *buff, int xmin, int xmax, int ymin, int ymax, color_8 color);
 void draw_block(unsigned char *buff, int xmin,int xmax, int ymin, int ymax, color_8 color);
 void draw_vblock(unsigned char *buff, int xmin,int xmax, int ymin, int ymax, color_8 color, enum ScreenNum screen);
+void draw_sblock(unsigned char *buff, int xmin,int xmax, int ymin, int ymax, color_8 color);
 void draw_flash_block(unsigned char *buff, int xmin,int xmax, int ymin, int ymax, color_8 color, int steps, int delay);
 
 int y_axis_trans(int y);

@@ -27,6 +27,7 @@ static uint32_t screen0size;
 static uint32_t screenpixel;
 static int fd;
 static int fd1;
+static int fd2;
 
 static enum ScreenNum SCREEN_USING;
 
@@ -56,7 +57,7 @@ unsigned char *fb_init()
 
 	screen0size = screenpixel * bits_per_pixel / BIT_TO_BYTE;
 	screensize = screen0size * yvres / yres;
-	printf("screensize = %u, screen0size = %u\n", screensize, screen0size);
+//	printf("screensize = %u, screen0size = %u\n", screensize, screen0size);
 	
 	fbinfo.activate = FB_ACTIVATE_FORCE;
 	fbinfo.yoffset = 0;
@@ -65,7 +66,7 @@ unsigned char *fb_init()
 
 	ioctl(fd, FBIOPAN_DISPLAY, &fbinfo);
 	SCREEN_USING = V_SCREEN0;
-	printf("vxres=%u, vyres= %u, yoffset=%u\n", fbinfo.xres_virtual, fbinfo.yres_virtual, fbinfo.yoffset);
+//	printf("vxres=%u, vyres= %u, yoffset=%u\n", fbinfo.xres_virtual, fbinfo.yres_virtual, fbinfo.yoffset);
 
 	return ((unsigned char *)mmap(NULL, screensize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0));
 }
@@ -75,14 +76,27 @@ unsigned char *fb1_init()
 	fd1 = open ("/dev/fb1", O_RDWR);
 	vinfo fbinfo;
 	ioctl(fd1, FBIOGET_VSCREENINFO, &fbinfo);
-	printf("yoffset=%u\n", fbinfo.xres, fbinfo.yres, fbinfo.yres_virtual, fbinfo.yoffset);
+//	printf("yoffset=%u\n", fbinfo.xres, fbinfo.yres, fbinfo.yres_virtual, fbinfo.yoffset);
 	fbinfo.activate = FB_ACTIVATE_FORCE;
 	ioctl(fd1, FBIOPUT_VSCREENINFO, &fbinfo);
 //	ioctl(fd1, FBIOPAN_DISPLAY, &fbinfo);
 	ioctl(fd1, FBIOBLANK, FB_BLANK_UNBLANK);
 
-	return ((unsigned char *)mmap(NULL, screen0size, PROT_READ | PROT_WRITE, MAP_SHARED, fd1, 0));
+	return ((unsigned char *)mmap(NULL, screensize, PROT_READ | PROT_WRITE, MAP_SHARED, fd1, 0));
 }
+
+unsigned char *fb2_init()
+{
+	fd2 = open ("/dev/fb2", O_RDWR);
+	vinfo fbinfo;
+	ioctl(fd2, FBIOGET_VSCREENINFO, &fbinfo);
+	fbinfo.activate = FB_ACTIVATE_FORCE;
+	ioctl(fd2, FBIOPUT_VSCREENINFO, &fbinfo);
+	ioctl(fd2, FBIOBLANK, FB_BLANK_UNBLANK);
+
+	return ((unsigned char *)mmap(NULL, screensize, PROT_READ | PROT_WRITE, MAP_SHARED, fd2, 0));
+}
+
 
 void wipe_screen(unsigned char* buff)
 {
@@ -93,7 +107,7 @@ void wipe_screen(unsigned char* buff)
 void wipe_screen0(unsigned char* buff)
 {
 	unsigned char *tmp = buff;
-	printf("%p\n", tmp);
+//	printf("%p\n", tmp);
 	memset(tmp, 0, screen0size);
 }
 
@@ -113,10 +127,10 @@ void release_fb(unsigned char* buff)
 	munmap(buff, screensize);
 }
 
-
+//DECEPATED:release_fb1
 void release_fb1(unsigned char *buff)
 {
-	munmap(buff, screen0size);
+	munmap(buff, screensize);
 }
 
 void switch_vscreen()
@@ -225,6 +239,29 @@ void draw_block(unsigned char *buff, int xmin, int xmax, int ymin, int ymax, col
 	}
 }
 
+void draw_sblock(unsigned char *buff, int xmin, int xmax, int ymin, int ymax, color_8 color)
+{
+	int tmp;
+	if (xmin > xmax)
+	{
+		tmp = xmin;
+		xmin = xmax;
+		xmax = tmp;
+	}
+	if (ymin > ymax)
+	{
+		tmp = ymin;
+		ymin = ymax;
+		ymax = tmp;
+	}
+
+	for (int j = ymin; j < ymax; j++)
+	{
+		for (int i = xmin; i < xmax; i++)
+			draw_point(buff, i, j, color);
+		usleep(10000);	
+	}
+}
 
 void draw_vblock(unsigned char* buff, int xmin, int xmax, int ymin, int ymax, color_8 color,  enum ScreenNum screen)
 {
