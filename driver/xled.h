@@ -12,10 +12,14 @@
 
 #define BYTE0 (<<)
 
-struct file_operations *xled_op
+struct file_operations xled_fop =
 {
-	
-}
+	.owner = THIS_MODULE,
+	.open = xled_open,
+	.release = xled_release,
+	.read = xled_read,
+	.write = xled_write,
+};
 
 
 int xled_open(struct inode *inode, struct file *flip);
