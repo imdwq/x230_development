@@ -12,6 +12,14 @@
 
 #define BYTE0 (<<)
 
+struct gpio_struct
+{
+	volatile int *pCtrl;
+	volatile int *pData;
+};
+
+typedef gpio_struct gpio_t;
+
 struct file_operations xled_fop =
 {
 	.owner = THIS_MODULE,
@@ -19,6 +27,7 @@ struct file_operations xled_fop =
 	.release = xled_release,
 	.read = xled_read,
 	.write = xled_write,
+	.compact_ioctl = xled_ioctl
 };
 
 
@@ -26,5 +35,6 @@ int xled_open(struct inode *inode, struct file *flip);
 int xled_release(struct inode *inode, struct file *flip);
 ssize_t xled_read(struct file *filp, char *buff, size_t count, loff_t *f_pos);
 ssize_t xled_write(struct file *filp, char *buff, size_t count, loff_t *f_pos);
+long xled_ioctl(struct file *filp,unsigned int cmd,unsigned long arg);
 
 #endif
