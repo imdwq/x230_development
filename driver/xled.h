@@ -16,14 +16,12 @@
 #define GPJ0CONPDN 0xE0200250
 #define GPJ0PUDPDN 0xE0200254
 
+#define XLEDIO 0x00111000;
+#define XLEDSIGN (1 << 3) | (1 << 4) | (1 << 5)
+
 #define ALLIOIN 0
 #define ALLIOOUT 0x11111111; 
 
-typedef struct gpio_struct
-{
-	volatile int *pCtrl;
-	volatile int *pData;
-}gpio_t;
 
 int xled_open(struct inode *inode, struct file *filp);
 int xled_release(struct inode *inode, struct file *filp);
@@ -38,7 +36,7 @@ struct file_operations xled_fop =
 	.release = xled_release,
 	.read = xled_read,
 	.write = xled_write,
-	.compat_ioctl = xled_ioctl
+	.unlocked_ioctl = xled_ioctl
 };
 
 #endif
