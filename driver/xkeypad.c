@@ -27,14 +27,14 @@ int xkeypad_open(struct inode *inode, struct file *filp)
 	gpio_t *gpio;
 	filp->private_data = kmalloc(sizeof(gpio_t), GFP_KERNEL);
 	gpio = (gpio_t *)(filp->private_data);
-	gpio->pCtrl = ioremap(GPJ2CON, 4);
-	gpio->pData = ioremap(GPJ2DAT, 4);
-	gpio->pPut = ioremap(GPJ2PUD, 4);
-
-	*(gpio->pCtrl) = ALLIOIN;
-
+//	gpio->pCtrl = ioremap(GPJ2CON, 4);
+//	gpio->pData = ioremap(GPJ2DAT, 4);
+//	gpio->pPut = ioremap(GPJ2PUD, 4);
+	gpio->pCtrl = ioremap(GPH2CON, 4);
+	gpio->pData = ioremap(GPH2DAT, 4);
+	gpio->pPut = ioremap(GPH2PUD, 4);
 	*(gpio->pPut) = (1 << 1) | (1 << 3) | (1 << 5) | (1 << 7) | (1 << 9) | (1 << 11) | (1 << 13) | (1 << 15);
-
+	*(gpio->pCtrl) = ALLIOIN;
 	try_module_get(THIS_MODULE);
 	return 0;
 }
@@ -63,7 +63,7 @@ ssize_t xkeypad_read(struct file *filp, char *buff, size_t count, loff_t *f_pos)
 //	*(gpio->pCtrl) = ALLIOIN;
 //	*(gpio->pPut) = (2 << 0) | (2 << 1) | (2 << 2) | (2 << 3) | (2 << 4) | (2 << 5) | (2 << 6) | (2 << 7);
 
-	c = (char)*(gpio->pData);
+	c = ~(char)*(gpio->pData);
 
 	copy_to_user(buff, &c, 1);
 	return 1;
