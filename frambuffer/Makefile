@@ -3,7 +3,7 @@ CFLAGS = -o
 LIBS = libfb.so
 PROGRAM = fbrun fbclean fbbmp fbflash fbblock fb2block
 
-all : $(PROGRAM) 
+all : $(PROGRAM)
 
 fb2block : fb2block.o libfb.so
 	$(CC) -o $@ $< -L ./ -l fb
@@ -23,8 +23,8 @@ fbrun : fbrun.o libfb.so
 fbclean : fbclean.o libfb.so
 	$(CC) -o $@ $< -L ./ -l fb
 
-libfb.so : frambuffer.o
-	$(CC) -shared -o $@ $< 
+$LIBS$ : frambuffer.o
+	$(CC) -shared -o $@ $<
 
 %.o : %.c
 	$(CC) -c  $<

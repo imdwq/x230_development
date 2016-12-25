@@ -58,7 +58,7 @@ unsigned char *fb_init()
 	screen0size = screenpixel * bits_per_pixel / BIT_TO_BYTE;
 	screensize = screen0size * yvres / yres;
 //	printf("screensize = %u, screen0size = %u\n", screensize, screen0size);
-	
+
 	fbinfo.activate = FB_ACTIVATE_FORCE;
 	fbinfo.yoffset = 0;
 	ioctl(fd, FBIOPUT_VSCREENINFO, &fbinfo);
@@ -160,11 +160,15 @@ void make_color(color_8 *out, unsigned char red, unsigned char green, unsigned c
 
 void draw_point(unsigned char *buff, uint32_t x, uint32_t y, color_8 color)
 {
+	//设置画点内存空间指针位置
 	uint32_t offset = (y * xres + x) * bits_per_pixel / BIT_TO_BYTE;
-	*(unsigned char *)(buff + offset + alpha.offset / BIT_TO_BYTE) = color.alpha;
-	*(unsigned char *)(buff + offset + red.offset / BIT_TO_BYTE) = color.red;
-	*(unsigned char *)(buff + offset + green.offset / BIT_TO_BYTE) = color.green;
-	*(unsigned char *)(buff + offset + blue.offset / BIT_TO_BYTE) = color.blue;
+	//由于实际设备单个像素占用4字节，故可以一次性写入单个像素提高效率
+	*(uint32_t *)(buff + offset) = (color.alpha << alpha.offset) | (color.red << red.offset) | (color.green << green.offset) | (color.blue << blue.offset);
+
+	// *(unsigned char *)(buff + offset + alpha.offset / BIT_TO_BYTE) = color.alpha;
+	// *(unsigned char *)(buff + offset + red.offset / BIT_TO_BYTE) = color.red;
+	// *(unsigned char *)(buff + offset + green.offset / BIT_TO_BYTE) = color.green;
+	// *(unsigned char *)(buff + offset + blue.offset / BIT_TO_BYTE) = color.blue;
 }
 
 void draw_func(unsigned char *buff, IntFunc func, int xmin, int xmax, color_8 color, int x0, int y0)
@@ -259,7 +263,7 @@ void draw_sblock(unsigned char *buff, int xmin, int xmax, int ymin, int ymax, co
 	{
 		for (int i = xmin; i < xmax; i++)
 			draw_point(buff, i, j, color);
-		usleep(10000);	
+		usleep(10000);
 	}
 }
 
