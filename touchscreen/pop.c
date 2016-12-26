@@ -1,9 +1,3 @@
-/*
- *  tslib/src/ts_main.c
- *
- *
- * new test program for touchscreen library.
- */
 #include "config.h"
 #include <sys/types.h>
 #include <stdio.h>
@@ -23,8 +17,14 @@ static int palette [] =
 };
 #define NR_COLORS (sizeof (palette) / sizeof (palette [0]))
 
-#define NR_BUTTONS 4
+#define NR_BUTTONS 3
 static struct ts_button buttons [NR_BUTTONS];
+
+typedef struct ts_block
+{
+	
+
+}
 
 static void sig(int sig)
 {
@@ -46,17 +46,30 @@ static void refresh_screen ()
 		button_draw (&buttons [i]);
 }
 
+static void print_help()
+{
+	int i;
+	fillrect (0, 0, xres - 1, yres - 1, 0);
+	put_string_center (xres/2, yres/4,"Touch screen to choose the same block", 2);
+
+	for (i = 0; i < NR_BUTTONS; i++)
+		button_draw (&buttons [i]);
+}
+
 int main()
 {
 	struct tsdev *ts;
 	int x, y;
-	int oldx = 0;
-	int oldy = 0;
 	unsigned int i;
 	unsigned int mode = 0;
 	int quit_pressed = 0;
-
+	int newclick_flag = 1;
 	char *tsdevice=NULL;
+
+	int id;
+	int tempid;
+
+
 
 	signal(SIGSEGV, sig);
 	signal(SIGINT, sig);
@@ -92,44 +105,22 @@ int main()
 
 	/* Initialize buttons */
 	memset (&buttons, 0, sizeof (buttons));
-/*
 	buttons [0].w = buttons [1].w = buttons [2].w = xres / 4;
 	buttons [0].h = buttons [1].h = buttons [2].h = 20;
 	buttons [0].x = 0;
 	buttons [1].x = (3 * xres) / 8;
 	buttons [2].x = (3 * xres) / 4;
 	buttons [0].y = buttons [1].y = buttons [2].y = 10;
-	buttons [0].text = "Drag";
-	buttons [1].text = "Draw";
+	buttons [0].text = "Start";
+	buttons [1].text = "Help";
 	buttons [2].text = "Quit";
-*/
-	buttons[0].w = buttons[1].w = buttons[2].w = buttons[3].w = xres / 8;
-	buttons[0].h = buttons[1].h = buttons[2].h = buttons[3].h = 20;
-	buttons[0].x = 0;
-	buttons[1].x = xres / 4;
-	buttons[2].x = xres / 2;
-	buttons[3].x = 3 * xres / 4;
-	buttons[0].y = buttons[1].y = buttons[2].y = buttons[3].y = 10;
-	buttons[0].text = "Drag";
-	buttons[1].text = "Draw";
-	buttons[2].text = "Bmp";
-	buttons[3].text = "Quit";
 	refresh_screen ();
 
 	while (1) {
 		struct ts_sample samp;
 		int ret;
 
-		/* Show the cross */
-		if ((mode & 15) != 1)
-			put_cross(x, y, 2 | XORMODE);
-
 		ret = ts_read(ts, &samp, 1);
-
-		/* Hide it */
-		if ((mode & 15) != 1)
-			put_cross(x, y, 2 | XORMODE);
-
 		if (ret < 0) {
 			perror("ts_read");
 			close_framebuffer();
@@ -148,13 +139,9 @@ int main()
 					break;
 				case 1:
 					mode = 1;
-					refresh_screen ();
+					print_help();
 					break;
 				case 2:
-					mode = 2;
-					refresh_screen ();
-					break;
-				case 3:
 					quit_pressed = 1;
 				}
 
@@ -162,24 +149,33 @@ int main()
 			samp.x, samp.y, samp.pressure);
 
 		if (samp.pressure > 0) {
-			if (mode == 0x80000001)
-				line (x, y, samp.x, samp.y, 2);
-			
-			x = samp.x;
-			y = samp.y;
+			if(newclick_flag)
+			{
+				x = samp.x;
+				y = samp.y;
+				newclick_flag = 0;
+			}
+			else
+			{
+				x = (samp.x + x) >> 2;
+				y = (samp.y + y) >> 2;
+			}
 			mode |= 0x80000000;
 		} else
 			mode &= ~0x80000000;
-		if (mode == 0x00000002)
+		if (mode == 0x00000001)
 		{
-			fillrect (oldx, oldy, oldx + 30, oldy + 30, 0);
-			put_string_center (xres/2, yres/4,"Touch screen to move crosshair", 2);
-			for (i = 0; i < NR_BUTTONS; i++)
-			button_draw (&buttons [i]);
-			fillrect (samp.x, samp.y, samp.x + 30, samp.y + 30, 1);
-			oldx = samp.x;
-			oldy = samp.y;
-			//draw_BMP("1234.bmp", samp.x, samp.y);
+
+			int id = block_getid(x, y, &block);
+			block_wrap()
+			if(id)
+			{
+				if(!tmpid)
+					tmpid = id;
+				else if(id != tmpid)
+					tmp
+			}
+			newclick_flag = 1;
 		}
 		if (quit_pressed)
 			break;
@@ -188,3 +184,5 @@ int main()
 
 	return 0;
 }
+
+

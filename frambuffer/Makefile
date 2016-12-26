@@ -23,7 +23,7 @@ fbrun : fbrun.o libfb.so
 fbclean : fbclean.o libfb.so
 	$(CC) -o $@ $< -L ./ -l fb
 
-$LIBS$ : frambuffer.o
+libfb.so : frambuffer.o
 	$(CC) -shared -o $@ $<
 
 %.o : %.c
@@ -34,7 +34,7 @@ $LIBS$ : frambuffer.o
 .PHONY : clean cleantmp lib cp
 
 clean :
-	rm -f *.o
+	rm -f *.o 
 
 cleantmp :
 	rm -f *.h~ *.c~ Makefile~ .*.un~ .*.*.un~

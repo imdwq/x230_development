@@ -64,7 +64,8 @@ unsigned char *fb_init()
 	ioctl(fd, FBIOPUT_VSCREENINFO, &fbinfo);
 	ioctl(fd, FBIOBLANK, FB_BLANK_UNBLANK);
 
-	ioctl(fd, FBIOPAN_DISPLAY, &fbinfo);
+//	ioctl(fd, FBIOPAN_DISPLAY, &fbinfo);
+	ioctl(fd, FBIOPUT_VSCREENINFO, &fbinfo);
 	SCREEN_USING = V_SCREEN0;
 //	printf("vxres=%u, vyres= %u, yoffset=%u\n", fbinfo.xres_virtual, fbinfo.yres_virtual, fbinfo.yoffset);
 
@@ -457,12 +458,13 @@ void draw_flash_BMP(unsigned char *buff, char *path[], uint32_t xbias[], uint32_
 	printf("%s\n%s\n" , path[0], path[1]);
 	uint32_t i;
 	draw_vBMP(buff, path[0], xbias[0], ybias[0], SCREEN_USING);
-
+	printf("screen%d\n",SCREEN_USING);
+	sleep(sec);
 	for(i = 1; i < frames; i++)
 	{
-		wipe_oldscreen(buff);
 		draw_vBMP(buff, path[i], xbias[i], ybias[i], V_SCREEN1 - SCREEN_USING);
-		sleep(sec);
 		switch_vscreen();
+		printf("screen%d\n",SCREEN_USING);
+		sleep(sec);
 	}
 }

@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 	char *path[] = {"1.bmp", "2.bmp", "1234.bmp", "1.bmp", "2.bmp"};
 	
 	wipe_allscreen(fbp);
-	draw_flash_BMP(fbp, path, bias, bias, 5, 0);
+	draw_flash_BMP(fbp, path, bias, bias, 5, 1);
 
 	release_fb(fbp);
 

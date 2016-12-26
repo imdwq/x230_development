@@ -1,5 +1,4 @@
 #include "xled.h"
-#include "GPIO.h"
 
 static dev_t major;
 
@@ -27,8 +26,9 @@ int xled_open(struct inode *inode, struct file *filp)
 	gpio_t *gpio;
 	filp->private_data = kmalloc(sizeof(gpio_t), GFP_KERNEL);
 	gpio = (gpio_t *)(filp->private_data);
-	gpio->pCtrl = ioremap(GPJ0CON, 4);
-	gpio->pData = ioremap(GPJ0DAT, 4);
+	gpio->pCtrl[0] = ioremap(GPJ0CON, 4);
+	gpio->pData[0] = ioremap(GPJ0DAT, 4);
+	*(gpio->pCtrl[0]) = XLEDIO;
 
 	try_module_get(THIS_MODULE);
 	return 0;
@@ -36,11 +36,10 @@ int xled_open(struct inode *inode, struct file *filp)
 int xled_release(struct inode *inode, struct file *filp)
 {
 	gpio_t *gpio = (gpio_t *)filp->private_data;
-	iounmap(gpio->pCtrl);
-	iounmap(gpio->pData);
+	iounmap(gpio->pCtrl[0]);
+	iounmap(gpio->pData[0]);
 	kfree(gpio);
 	
-
 	module_put(THIS_MODULE);
 	return 0;
 }
@@ -50,8 +49,7 @@ ssize_t xled_read(struct file *filp, char *buff, size_t count, loff_t *f_pos)
 	gpio_t *gpio = (gpio_t *)filp->private_data;
 	char c;
 
-	*(gpio->pCtrl) = XLEDIO;
-	c = (char)*(gpio->pData);
+	c = (char)*(gpio->pData[0]);
 	c &= ~(XLEDSIGN);
 
 //	*(gpio->pCtrl) = ALLIOIN;
@@ -69,11 +67,10 @@ ssize_t xled_write(struct file *filp, char *buff, size_t count, loff_t *f_pos)
 	c = ~c;
 	c &= (XLEDSIGN);
 
-	*(gpio->pCtrl) = XLEDIO;
-	tmp = *(gpio->pData);
+	tmp = *(gpio->pData[0]);
         tmp &= ~(XLEDSIGN);
-	*(gpio->pData) = tmp;
-	*(gpio->pData) |= c;
+	*(gpio->pData[0]) = tmp;
+	*(gpio->pData[0]) |= c;
 
 //	*(gpio->pCtrl) = ALLIOOUT;
 //	*(gpio->pData) = ~c;
@@ -84,8 +81,8 @@ long xled_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
 	gpio_t *gpio_p = (gpio_t *)filp->private_data;
 	gpio_info gpio;
-	gpio.Data = *(gpio_p->pData);
-	gpio.Ctrl = *(gpio_p->pCtrl);
+	gpio.Data = *(gpio_p->pData[0]);
+	gpio.Ctrl = *(gpio_p->pCtrl[0]);
 	int err = 0;
 	switch (cmd)
 	{
@@ -96,8 +93,8 @@ long xled_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 			else
 			{
 				copy_from_user(&gpio, (void *)arg, sizeof(gpio));
-				*(gpio_p->pCtrl) = gpio.Ctrl;
-				*(gpio_p->pData) = gpio.Data;
+				*(gpio_p->pCtrl[0]) = gpio.Ctrl;
+				*(gpio_p->pData[0]) = gpio.Data;
 			}
 			break;
 
@@ -110,8 +107,8 @@ long xled_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 			break;
 
 		case XLEDBLANK:
-			*(gpio_p->pCtrl) = XLEDIO;
-			*(gpio_p->pData) |= XLEDSIGN; 
+			*(gpio_p->pCtrl[0]) = XLEDIO;
+			*(gpio_p->pData[0]) |= XLEDSIGN; 
 			break;
 		default:
 			return -ENOTTY;

@@ -1,6 +1,6 @@
 MODULE = xled.o xkeypad.o
 CC = arm-linux-gcc
-PROGRAM = ledread ledwrite ledioctl keypadread
+PROGRAM = ledread ledwrite ledioctl keypadread mixtest
 KMODULE = xled.ko xkeypad.ko
 
 ifneq ($(KERNELRELEASE),)
@@ -15,18 +15,21 @@ endif
 
 program : $(PROGRAM) 
 
-ledread: ledread.o
+ledread : ledread.o
 	$(CC) -o $@ $<
 
-ledwrite: ledwrite.o
+ledwrite : ledwrite.o
 	$(CC) -o $@ $<
 
-ledioctl: ledioctl.o
+ledioctl : ledioctl.o
 	$(CC) -o $@ $<
 
-keypadread: keypadread.o
+keypadread : keypadread.o
 	$(CC) -o $@ $<
-	
+
+mixtest : mixtest.o
+	$(CC) -o $@ $<
+
 %.o : %.c
 	$(CC) -c  $<
 
@@ -34,7 +37,7 @@ keypadread: keypadread.o
 .PHONY : clean cleantmp cp
 
 clean :
-	rm -f *.o
+	rm -f *.o *.ko
 
 cleantmp :
 	rm -f *.h~ *.c~ Makefile~ .*.un~ .*.*.un~ .*.swp .*.swo .*.cmd

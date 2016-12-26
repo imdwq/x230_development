@@ -1,5 +1,4 @@
 #include "xkeypad.h"
-#include "GPIO.h"
 
 static dev_t major;
 
@@ -30,20 +29,28 @@ int xkeypad_open(struct inode *inode, struct file *filp)
 //	gpio->pCtrl = ioremap(GPJ2CON, 4);
 //	gpio->pData = ioremap(GPJ2DAT, 4);
 //	gpio->pPut = ioremap(GPJ2PUD, 4);
-	gpio->pCtrl = ioremap(GPH2CON, 4);
-	gpio->pData = ioremap(GPH2DAT, 4);
-	gpio->pPut = ioremap(GPH2PUD, 4);
-	*(gpio->pPut) = (1 << 1) | (1 << 3) | (1 << 5) | (1 << 7) | (1 << 9) | (1 << 11) | (1 << 13) | (1 << 15);
-	*(gpio->pCtrl) = ALLIOIN;
+	gpio->pCtrl[0] = ioremap(GPH0CON, 4);
+	gpio->pData[0] = ioremap(GPH0DAT, 4);
+	gpio->pPut[0] = ioremap(GPH0PUD, 4);
+	gpio->pCtrl[2] = ioremap(GPH2CON, 4);
+	gpio->pData[2] = ioremap(GPH2DAT, 4);
+	gpio->pPut[2] = ioremap(GPH2PUD, 4);
+	*(gpio->pCtrl[0]) = ALLIOIN;
+	*(gpio->pPut[0]) = KEYPADH0PUT; 
+	*(gpio->pCtrl[2]) = ALLIOIN;
+	*(gpio->pPut[2]) = KEYPADH2PUT; 
 	try_module_get(THIS_MODULE);
 	return 0;
 }
 int xkeypad_release(struct inode *inode, struct file *filp)
 {
 	gpio_t *gpio = (gpio_t *)filp->private_data;
-	iounmap(gpio->pCtrl);
-	iounmap(gpio->pData);
-	iounmap(gpio->pPut);
+	iounmap(gpio->pCtrl[0]);
+	iounmap(gpio->pData[0]);
+	iounmap(gpio->pPut[0]);
+	iounmap(gpio->pCtrl[2]);
+	iounmap(gpio->pData[2]);
+	iounmap(gpio->pPut[2]);
 	kfree(gpio);
 	
 
@@ -54,78 +61,14 @@ int xkeypad_release(struct inode *inode, struct file *filp)
 ssize_t xkeypad_read(struct file *filp, char *buff, size_t count, loff_t *f_pos)
 {
 	gpio_t *gpio = (gpio_t *)filp->private_data;
-	char c;
-
-//	*(gpio->pCtrl) = XLEDIO;
-//	c = (char)*(gpio->pData);
-//	c &= ~(XLEDSIGN);
-
-//	*(gpio->pCtrl) = ALLIOIN;
-//	*(gpio->pPut) = (2 << 0) | (2 << 1) | (2 << 2) | (2 << 3) | (2 << 4) | (2 << 5) | (2 << 6) | (2 << 7);
-
-	c = ~(char)*(gpio->pData);
+	char c, keyh0, keyh2;
+	
+	keyh0 = ~(char)*(gpio->pData[0]) & KEYPADH0_MASK;
+	keyh2 = ~(char)*(gpio->pData[2]) & KEYPADH2_MASK;
+	c = (keyh0 << 2) | keyh2;
 
 	copy_to_user(buff, &c, 1);
 	return 1;
-}
-
-ssize_t xkeypad_write(struct file *filp, char *buff, size_t count, loff_t *f_pos)
-{
-	gpio_t *gpio = (gpio_t *)filp->private_data;
-	char c,tmp;
-	copy_from_user(&c, buff, 1);
-//	c = ~c;
-//	c &= (XLEDSIGN);
-
-//	*(gpio->pCtrl) = XLEDIO;
-//	tmp = *(gpio->pData);
-//	tmp &= ~(XLEDSIGN);
-//	*(gpio->pData) = tmp;
-//	*(gpio->pData) |= c;
-
-//	*(gpio->pCtrl) = ALLIOOUT;
-//	*(gpio->pData) = ~c;
-	return 1;
-}
-
-long xkeypad_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
-{
-	gpio_t *gpio_p = (gpio_t *)filp->private_data;
-	gpio_info gpio;
-	gpio.Data = *(gpio_p->pData);
-	gpio.Ctrl = *(gpio_p->pCtrl);
-	int err = 0;
-	switch (cmd)
-	{
-		case GPIOSET:
-			err = !access_ok(VERIFY_READ, (void *)arg, sizeof(gpio)); 
-			if (err) 
-				return -EFAULT;
-			else
-			{
-				copy_from_user(&gpio, (void *)arg, sizeof(gpio));
-				*(gpio_p->pCtrl) = gpio.Ctrl;
-				*(gpio_p->pData) = gpio.Data;
-			}
-			break;
-
-		case GPIOGET:
-			err = !access_ok(VERIFY_WRITE, (void *)arg, sizeof(gpio)); 
-			if (err) 
-				return -EFAULT;
-			else 
-				copy_to_user((void *)arg, &gpio, sizeof(gpio));
-			break;
-
-		case XLEDBLANK:
-			*(gpio_p->pCtrl) = XLEDIO;
-			*(gpio_p->pData) |= XLEDSIGN; 
-			break;
-		default:
-			return -ENOTTY;
-			break;
-	}
-	return 0; 
 }
 
 MODULE_LICENSE("GPL");

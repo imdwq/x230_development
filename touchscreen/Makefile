@@ -10,7 +10,9 @@ ts_main : $(OBJ)
 %.o : %.c
 	$(CC) -c  $<
 
-.PHONY : clean cp
+.PHONY : clean cp cleantmp
+cleantmp :
+	rm -f *.h~ *.c~ Makefile~ .*.un~ .*.*.un~
 
 clean :
 	rm -f *.o

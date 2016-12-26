@@ -21,8 +21,6 @@ __attribute__((section("__versions"))) = {
 	{ 0x6bc3fbc0, "__unregister_chrdev" },
 	{ 0x27e1a049, "printk" },
 	{ 0x16653c87, "__register_chrdev" },
-	{ 0xfbc74f64, "__copy_from_user" },
-	{ 0xfa2a45e, "__memzero" },
 	{ 0x67c2fa54, "__copy_to_user" },
 	{ 0xa9e215f4, "module_put" },
 	{ 0x37a0cba, "kfree" },
