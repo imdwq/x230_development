@@ -1,10 +1,13 @@
 CC = arm-linux-gcc
-PROGRAM = ts_main
-OBJ = ts_main.o font_8x8.o font_8x16.o fbconfig.o newtest.o
+PROGRAM = ts_main pop
+OBJ = font_8x8.o font_8x16.o fbconfig.o newtest.o
 
 default : $(PROGRAM) 
 
-ts_main : $(OBJ)
+pop : pop.o $(OBJ)
+	$(CC) -o $@ $^ -L ./ libts.so
+
+ts_main : ts_main.o  $(OBJ)
 	$(CC) -o $@ $^ -L ./ libts.so
 	
 %.o : %.c

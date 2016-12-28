@@ -450,6 +450,7 @@ void make_color(color_8 *out, unsigned char red, unsigned char green, unsigned c
 void draw_BMP(char path[], __u32 xbias, __u32 ybias)
 {
 	FILE *fp;
+	printf("path=%s\n", path);
 	if (fp = fopen(path, "r"))
 	{
 		BMP_head head;
@@ -468,8 +469,8 @@ void draw_BMP(char path[], __u32 xbias, __u32 ybias)
 			return;
 		}
 
-		printf("BitCount = %d\n", info.BitCount);
-		printf("Height = %d, Width = %d\n", info.Height, info.Width);
+		//printf("BitCount = %d\n", info.BitCount);
+		//printf("Height = %d, Width = %d\n", info.Height, info.Width);
 		switch(info.BitCount)
 		{
 			case 24:draw_BMP_24(fp, &info, xbias, ybias);	break;
