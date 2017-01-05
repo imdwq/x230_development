@@ -1,0 +1,150 @@
+%.o	Makefile	/^%.o : %.c$/
+.PHONY	Makefile	/^.PHONY : clean cleantmp lib cp$/
+BIT_TO_BYTE	frambuffer.c	16
+BIT_TO_BYTE	frambuffer.c~	16
+BIT_TO_BYTE	info.h	5
+BMP_head	frambuffer.h	28
+BMP_head	frambuffer.h~	28
+BMP_info	frambuffer.h	39
+BMP_info	frambuffer.h~	39
+BitCount	frambuffer.h	36
+BitCount	frambuffer.h~	36
+CC	Makefile	/^CC = arm-linux-gcc$/
+CC	Makefile~	1
+CFLAGS	Makefile	/^CFLAGS = -o$/
+Compression	frambuffer.h	37
+Compression	frambuffer.h~	37
+DrawFuction	frambuffer.c	27
+DrawFuction	frambuffer.c~	27
+DrawFunc	frambuffer.h	42
+DrawFunc	frambuffer.h~	42
+Height	frambuffer.h	34
+Height	frambuffer.h~	34
+IntFunc	frambuffer.h	43
+IntFunc	frambuffer.h~	43
+LIBS	Makefile	/^LIBS = libfb.so$/
+Mfbbmp	fbbmp.c	/^int main(int argc, char *argv[])$/
+Mfbbmp.c~	fbbmp.c~	/^int main(int argc, char *argv[])$/
+Mfbclean	fbclean.c	/^int main(int argc, char *argv[])$/
+Mfbclean.c~	fbclean.c~	/^int main(int argc, char *argv[])$/
+Mfbflash	fbflash.c	/^int main(int argc, char *argv[])$/
+Mfbflash.c~	fbflash.c~	/^int main(int argc, char *argv[])$/
+Mfbrun	fbrun.c	/^int main(int argc, char *argv[])$/
+Mfbrun.c~	fbrun.c~	/^int main(int argc, char *argv[])$/
+PROGRAM	Makefile	/^PROGRAM = fbrun fbclean fbbmp fbflash$/
+Planes	frambuffer.h	35
+Planes	frambuffer.h~	35
+SCREEN_USING	frambuffer.c	30
+SCREEN_USING	frambuffer.c~	30
+ScreenNum	frambuffer.c	28
+ScreenNum	frambuffer.c~	28
+Size	frambuffer.h	32
+Size	frambuffer.h~	32
+SizeImage	frambuffer.h	38
+SizeImage	frambuffer.h~	38
+V_SCREEN0	frambuffer.c	28
+V_SCREEN0	frambuffer.c~	28
+V_SCREEN1	frambuffer.c	28
+V_SCREEN1	frambuffer.c~	28
+Width	frambuffer.h	33
+Width	frambuffer.h~	33
+_FRAMBUFFER_	frambuffer.h	3
+_FRAMBUFFER_	frambuffer.h~	3
+__u32	info.h	4
+_x210INFO_	info.h	2
+all	Makefile	/^all : $(PROGRAM) $/
+alpha	frambuffer.c	18
+alpha	frambuffer.c~	18
+alpha	frambuffer.h	16
+alpha	frambuffer.h~	16
+bits_per_pixel	frambuffer.c	22
+bits_per_pixel	frambuffer.c~	22
+blue	frambuffer.c	18
+blue	frambuffer.c~	18
+blue	frambuffer.h	13
+blue	frambuffer.h~	13
+clean	Makefile	/^clean :$/
+cleantmp	Makefile	/^cleantmp :$/
+color_8	frambuffer.h	17
+color_8	frambuffer.h~	17
+cos	frambuffer.c	27
+cos	frambuffer.c~	27
+cp	Makefile	/^cp :$/
+draw_BMP	frambuffer.c	/^void draw_BMP(unsigned char* buff, char path[], ui/
+draw_BMP	frambuffer.c~	/^void draw_BMP(unsigned char* buff, char path[], ui/
+draw_BMP_24	frambuffer.c	/^void draw_BMP_24(unsigned char *buff, FILE *fp, BM/
+draw_BMP_24	frambuffer.c~	/^void draw_BMP_24(unsigned char *buff, FILE *fp, BM/
+draw_BMP_32	frambuffer.c	/^void draw_BMP_32(unsigned char *buff, FILE *fp, BM/
+draw_BMP_32	frambuffer.c~	/^void draw_BMP_32(unsigned char *buff, FILE *fp, BM/
+draw_block	frambuffer.c	/^void draw_block(unsigned char *buff, int xmin, int/
+draw_block	frambuffer.c~	/^void draw_block(unsigned char *buff, int xmin, int/
+draw_flash_BMP	frambuffer.c	/^void draw_flash_BMP()$/
+draw_flash_BMP	frambuffer.c~	/^void draw_flash_BMP()$/
+draw_func	frambuffer.c	/^void draw_func(unsigned char *buff, IntFunc func, /
+draw_func	frambuffer.c~	/^void draw_func(unsigned char *buff, IntFunc func, /
+draw_func_0	frambuffer.c	/^void draw_func_0(unsigned char *buff, IntFunc func/
+draw_func_0	frambuffer.c~	/^void draw_func_0(unsigned char *buff, IntFunc func/
+draw_line	frambuffer.c	/^void draw_line(unsigned char *buff, int xmin, int /
+draw_line	frambuffer.c~	/^void draw_line(unsigned char *buff, int xmin, int /
+draw_point	frambuffer.c	/^void draw_point(unsigned char *buff, uint32_t x, u/
+draw_point	frambuffer.c~	/^void draw_point(unsigned char *buff, uint32_t x, u/
+f_Offset	frambuffer.h	26
+f_Offset	frambuffer.h~	26
+f_Reserved_1	frambuffer.h	24
+f_Reserved_1	frambuffer.h~	24
+f_Reserved_2	frambuffer.h	25
+f_Reserved_2	frambuffer.h~	25
+f_Size	frambuffer.h	23
+f_Size	frambuffer.h~	23
+f_Type	frambuffer.h	22
+f_Type	frambuffer.h~	22
+fb_init	frambuffer.c	/^int fb_init(unsigned char *buff)$/
+fb_init	frambuffer.c~	/^int fb_init(unsigned char *buff)$/
+fbbmp	Makefile	/^fbbmp : fbbmp.o libfb.so$/
+fbclean	Makefile	/^fbclean : fbclean.o libfb.so$/
+fbcolor	frambuffer.h	10
+fbcolor	frambuffer.h~	10
+fbflash	Makefile	/^fbflash : fbflash.o libfb.so$/
+fbrun	Makefile	/^fbrun : fbrun.o libfb.so$/
+func_line	frambuffer.c	/^DrawFunc func_line(int x)$/
+func_line	frambuffer.c~	/^DrawFunc func_line(int x)$/
+func_parabola	frambuffer.c	/^DrawFunc func_parabola(int x)$/
+func_parabola	frambuffer.c~	/^DrawFunc func_parabola(int x)$/
+func_parabola_0	frambuffer.c	/^DrawFunc func_parabola_0(int x)$/
+func_parabola_0	frambuffer.c~	/^DrawFunc func_parabola_0(int x)$/
+green	frambuffer.c	18
+green	frambuffer.c~	18
+green	frambuffer.h	14
+green	frambuffer.h~	14
+lib	Makefile	/^lib :$/
+libfb.so	Makefile	/^libfb.so : frambuffer.o$/
+line	frambuffer.c	27
+line	frambuffer.c~	27
+make_color	frambuffer.c	/^void make_color(color_8 *out, unsigned char red, u/
+make_color	frambuffer.c~	/^void make_color(color_8 *out, unsigned char red, u/
+red	frambuffer.c	18
+red	frambuffer.c~	18
+red	frambuffer.h	15
+red	frambuffer.h~	15
+release_fb	frambuffer.c	/^void release_fb(unsigned char* buff)$/
+release_fb	frambuffer.c~	/^void release_fb(unsigned char* buff)$/
+screenpixel	frambuffer.c	24
+screenpixel	frambuffer.c~	24
+screensize	frambuffer.c	23
+screensize	frambuffer.c~	23
+sin	frambuffer.c	27
+sin	frambuffer.c~	27
+switch_vscreen	frambuffer.c	/^void switch_vscreen(int fd)$/
+switch_vscreen	frambuffer.c~	/^void switch_vscreen(int fd)$/
+vinfo	frambuffer.h	9
+vinfo	frambuffer.h~	9
+wipe_screen	frambuffer.c	/^void wipe_screen(unsigned char* buff)$/
+wipe_screen	frambuffer.c~	/^void wipe_screen(unsigned char* buff)$/
+xres	frambuffer.c	20
+xres	frambuffer.c~	20
+y_axis_trans	frambuffer.c	/^int y_axis_trans(int y)$/
+y_axis_trans	frambuffer.c~	/^int y_axis_trans(int y)$/
+yres	frambuffer.c	21
+yres	frambuffer.c~	21
+zero_func_trans	frambuffer.c	/^void zero_func_trans(int *x, int *y, int x0, int y/
+zero_func_trans	frambuffer.c~	/^void zero_func_trans(int *x, int *y, int x0, int y/

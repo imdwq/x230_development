@@ -1,0 +1,60 @@
+
+## tslib 1.3
+merge released this on TODO
+
+Most notable changes since 1.2 are:
+* user visible:
+    - multitouch:
+      tests/ts_print_mt
+      tests/ts_print_raw_mt
+      tests/ts_test_mt
+    - tools/ts_uinput: daemon program offers an input event device to use, instead of tslib's API
+    - new filter plugin: median filter
+    - man pages
+
+* user API:
+    - ts_read_mt() and struct ts_sample_mt
+    - ts_reconfig()
+
+* misc:
+    - support for multitouch in input-raw and filter plugins
+    - bugfixes (partly found by Coverity)
+    - build system fixes
+
+
+## tslib 1.2
+merge released this on 18 Nov 2016
+
+Most notable changes since 1.1 are:
+* user visible:
+    new plugins, see below
+    added ts_finddev program (via buildroot)
+
+* hardware plugins:
+    improved eGalax touchscreen support
+    added support for eGalax 7200 and 7201 touchscreens
+    added hardware plugin for WaveShare touchscreens
+
+* filter plugins:
+    bugfixes in variance plugin
+    added debounce plugin
+    added skip plugin
+
+* misc:
+    library versioning
+    bugfixes and performance improvements
+
+
+## tslib 1.1
+kergoth released this on 8 Aug 2013
+
+This release is compatible with tslib 1.0.
+It includes many bug fixes, support for building with automake 1.13,
+support for running in a different resolution than during calibration,
+extremely basic multi-touch support (incomplete implementation of the
+multi-touch protocol) and 4 new tslib plugins (dmc, touchkit, egalax,
+palm pre). See the git repository history for details.
+
+
+## tslib 1.0
+kergoth released this on 16 Aug 2006
