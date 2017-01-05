@@ -76,7 +76,7 @@ void reset_map(Block_map *map)
 	int i;
 	for(i = 0; i < BLOCK_NUMBER; i++)
 		map->Block[i].exist_flag = 1;
-	map->exist_blocks = BLOCK_NUMBER; 
+	map->exist_blocks = BLOCK_NUMBER;
 }
 
 void show_map(Block_map *map)
@@ -85,7 +85,7 @@ void show_map(Block_map *map)
 	Block *block;
 	for(i = 0; i < BLOCK_NUMBER; i++)
 	{
-		block = (map->Block) + i;	
+		block = (map->Block) + i;
 		if(block->exist_flag)
 			draw_BMP(block->off_img_path, block->x, block->y);
 	}
@@ -103,7 +103,7 @@ void init_map(Block_map *map)
 	map->y_offset = 70;
 	map->block_length = 96;
 	map->block_height = 132;
-	
+
 	map->exist_blocks = BLOCK_NUMBER;
 	for(i = 0; i < BLOCK_NUMBER; i++)
 	{
@@ -128,12 +128,12 @@ void exit_map(Block_map *map)
 
 int get_block_id(Block_map *map, int x, int y)
 {
-	int idy = (y - map->y_offset) / map->block_height; 
-	int idx = (x - map->x_offset) / map->block_length; 
+	int idy = (y - map->y_offset) / map->block_height;
+	int idx = (x - map->x_offset) / map->block_length;
 	int id = idx + idy * X_BLOCK_NUMBER;
 	if(y >= map->y_offset && idy < Y_BLOCK_NUMBER && x >= map->x_offset && idx < X_BLOCK_NUMBER)
 	{
-		if ((map->Block[id]).exist_flag) 
+		if ((map->Block[id]).exist_flag)
 			return id;
 	}
 	return -1;
@@ -147,13 +147,13 @@ void press_block(Block_map *map, int id)
 	int y = block->y;
 	int px = pressed->x;
 	int py = pressed->y;
-	
+
 	if (map->pressed_block == id)
 	{
 		fillrect(x, y, x + map->block_length, y + map->block_height, 0);
 		draw_BMP(block->off_img_path, x, y);
 		map->pressed_block = -1;
-	}	
+	}
 	else if(map->pressed_block == -1)
 	{
 		fillrect(x, y, x + map->block_length, y + map->block_height, 0);
@@ -192,8 +192,8 @@ void change_map(Block_map *map)
 		press_block(map, map->pressed_block);
 	for(i = 0; i < BLOCK_NUMBER; i++)
 	{
-		free(map->Block[i].on_img_path);
-		free(map->Block[i].off_img_path);
+	//	free(map->Block[i].on_img_path);
+	//	free(map->Block[i].off_img_path);
 		blocktmp[i] = map->Block[i];
 		map->reset_flag[i] = 1;
 	}
@@ -207,12 +207,12 @@ void change_map(Block_map *map)
 		map->Block[i] = blocktmp[random];
 		map->Block[i].y = i / X_BLOCK_NUMBER * map->block_height + map->y_offset;
 		map->Block[i].x = i % X_BLOCK_NUMBER * map->block_length + map->x_offset;
-		string_off = (char *)malloc(25);
-		string_on = (char *)malloc(25);
-		get_imgpath(string_off, map->Block[i].imgid, 0);
-		get_imgpath(string_on, map->Block[i].imgid, 1);
-		map->Block[i].on_img_path = string_off;
-		map->Block[i].off_img_path = string_on;
+	//	string_off = (char *)malloc(25);
+	//	string_on = (char *)malloc(25);
+	//	get_imgpath(string_off, map->Block[i].imgid, 0);
+	//	get_imgpath(string_on, map->Block[i].imgid, 1);
+	//	map->Block[i].on_img_path = string_off;
+	//	map->Block[i].off_img_path = string_on;
 		map->reset_flag[random] = 0;
 	}
 }
@@ -319,21 +319,21 @@ int main()
 
 		if (ret != 1)
 			continue;
-		
+
 
 		for (i = 0; i < NR_BUTTONS; i++)
 			if (button_handle(&buttons [i], samp.x, samp.y, samp.pressure))
 				switch (i + 1) {
 				case 1:
 					mode = 1;
-					refresh_screen ();
+					refresh_screen();
 					reset_map(&map);
 					change_map(&map);
 					show_map(&map);
 					break;
 				case 2:
 					mode = 1;
-					refresh_screen ();
+					refresh_screen();
 					change_map(&map);
 					show_map(&map);
 					break;
@@ -371,7 +371,10 @@ int main()
 				{
 					press_block(&map, id);
 					if(map.exist_blocks == 0)
+					{
 						put_string_center (xres/2, yres/4,"Congratulations!", 2);
+						mode = 0;
+					}
 				}
 			}
 		}
@@ -383,5 +386,3 @@ int main()
 
 	return 0;
 }
-
-
